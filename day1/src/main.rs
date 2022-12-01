@@ -1,17 +1,6 @@
-const SAMPLE: &str = "1000
-2000
-3000
-
-4000
-
-5000
-6000
-
-7000
-8000
-9000
-
-10000";
+fn load_sample() -> String {
+    std::fs::read_to_string("sample").unwrap()
+}
 
 fn load_input() -> String {
     std::fs::read_to_string("input").unwrap()

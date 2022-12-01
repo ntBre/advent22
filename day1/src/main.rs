@@ -1,10 +1,4 @@
-fn load_sample() -> String {
-    std::fs::read_to_string("sample").unwrap()
-}
-
-fn load_input() -> String {
-    std::fs::read_to_string("input").unwrap()
-}
+use advent22::*;
 
 fn main() {
     let input = load_input();

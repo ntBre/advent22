@@ -10,3 +10,4 @@ curl -b $(cat ~/aoc_cookie) "https://adventofcode.com/$year/day/$day/input" \
      > $dir/input
 
 cp template.rs $dir/src/main.rs
+emacsclient -nr $dir/src/main.rs

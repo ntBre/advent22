@@ -8,8 +8,10 @@ dir=day$day
 cargo new $dir
 curl -b $(cat ~/aoc_cookie) "https://adventofcode.com/$year/day/$day/input" \
      > $dir/input
-
 xclip -selection primary -o > $dir/sample
 
-cp template.rs $dir/src/main.rs
+echo 'advent22 = { path = "../" }' >> $dir/Cargo.toml
+sed  -i "/members/a\"$dir\"," Cargo.toml
+sed -i '1i use advent22::*;' $dir/src/main.rs
+
 emacsclient -n -r $dir/src/main.rs

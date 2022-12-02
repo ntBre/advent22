@@ -1,0 +1,26 @@
+* Alternate solutions
+** Day 1
+*** Bash (mostly awk)
+    just change 1q to 3q for part 2
+    #+begin_src shell
+      awk '/^$/ {print sum; sum = 0}; {sum += $1}; END {print sum}' day1/input \
+	  | sort -nr | sed 1q | paste -sd+ | bc -l
+    #+end_src
+*** Just awk
+    ~s - 1~ to ~s - 3~ for part 2
+    #+begin_src awk :in-file day1/input
+      /^$/ {
+	  sums[s++] = sum;
+	  sum = 0
+      }
+
+      {
+	  sum += $1
+      }
+
+      END {
+	  asort(sums)
+	  for (i = s; i > s - 1; i--) tot += sums[i]
+	  print tot
+      }
+    #+end_src

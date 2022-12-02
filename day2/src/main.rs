@@ -64,16 +64,46 @@ fn score(our: Score, their: Score) -> (usize, usize) {
     (o + our.score(), t + their.score())
 }
 
+enum Outcome {
+    Win,
+    Lose,
+    Draw,
+}
+
+impl FromStr for Outcome {
+    type Err = ParseError;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "X" => Ok(Outcome::Lose),
+            "Y" => Ok(Outcome::Draw),
+            "Z" => Ok(Outcome::Win),
+            _ => todo!(),
+        }
+    }
+}
+
 fn main() {
     let s = load_input();
     let mut tot = 0;
     for line in s.lines() {
         let sp: Vec<_> = line.split_ascii_whitespace().collect();
         let theirs = Score::from_str(sp[0]).unwrap();
-        let ours = Score::from_str(sp[1]).unwrap();
+        let outcome = Outcome::from_str(sp[1]).unwrap();
+        use Score::*;
+        let ours = match (theirs, outcome) {
+            (Score::Rock, Outcome::Win) => Paper,
+            (Score::Rock, Outcome::Lose) => Scissors,
+            (Score::Rock, Outcome::Draw) => Rock,
+            (Score::Paper, Outcome::Win) => Scissors,
+            (Score::Paper, Outcome::Lose) => Rock,
+            (Score::Paper, Outcome::Draw) => Paper,
+            (Score::Scissors, Outcome::Win) => Rock,
+            (Score::Scissors, Outcome::Lose) => Paper,
+            (Score::Scissors, Outcome::Draw) => Scissors,
+        };
         let score = score(ours, theirs);
         tot += score.0;
-        println!("{:?}, {:?}, {:?}", ours, theirs, score.0);
     }
     println!("{tot}");
 }

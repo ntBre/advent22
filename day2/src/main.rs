@@ -13,16 +13,12 @@ impl PartialOrd for Score {
         &self,
         other: &Self,
     ) -> std::option::Option<std::cmp::Ordering> {
-        Some(match (self, other) {
-            (Score::Rock, Score::Rock) => Ordering::Equal,
-            (Score::Rock, Score::Paper) => Ordering::Less,
-            (Score::Rock, Score::Scissors) => Ordering::Greater,
-            (Score::Paper, Score::Rock) => Ordering::Greater,
-            (Score::Paper, Score::Paper) => Ordering::Equal,
-            (Score::Paper, Score::Scissors) => Ordering::Less,
-            (Score::Scissors, Score::Rock) => Ordering::Less,
-            (Score::Scissors, Score::Paper) => Ordering::Greater,
-            (Score::Scissors, Score::Scissors) => Ordering::Equal,
+        Some(if self == other {
+            Ordering::Equal
+        } else if self.greater() == *other {
+            Ordering::Less
+        } else {
+            Ordering::Greater
         })
     }
 }
@@ -35,6 +31,24 @@ impl Score {
             Score::Scissors => 3,
         }
     }
+
+    /// return the variant greater than `self`
+    fn greater(&self) -> Self {
+        match self {
+            Score::Rock => Self::Paper,
+            Score::Paper => Self::Scissors,
+            Score::Scissors => Self::Rock,
+        }
+    }
+
+    /// return the variant less than `self`
+    fn less(&self) -> Self {
+        match self {
+            Score::Rock => Self::Scissors,
+            Score::Paper => Self::Rock,
+            Score::Scissors => Self::Paper,
+        }
+    }
 }
 
 impl FromStr for Score {
@@ -42,12 +56,9 @@ impl FromStr for Score {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
-            "A" => Ok(Self::Rock),
-            "B" => Ok(Self::Paper),
-            "C" => Ok(Self::Scissors),
-            "X" => Ok(Self::Rock),
-            "Y" => Ok(Self::Paper),
-            "Z" => Ok(Self::Scissors),
+            "A" | "X" => Ok(Self::Rock),
+            "B" | "Y" => Ok(Self::Paper),
+            "C" | "Z" => Ok(Self::Scissors),
             _ => panic!("failed to match {s}"),
         }
     }
@@ -83,27 +94,41 @@ impl FromStr for Outcome {
     }
 }
 
-fn main() {
-    let s = load_input();
+fn part1(s: &str) -> usize {
+    let mut tot = 0;
+    for line in s.lines() {
+        let sp: Vec<_> = line.split_ascii_whitespace().collect();
+        let theirs = Score::from_str(sp[0]).unwrap();
+        let ours = Score::from_str(sp[1]).unwrap();
+        let score = score(ours, theirs);
+        tot += score.0;
+    }
+    tot
+}
+
+fn part2(s: &str) -> usize {
     let mut tot = 0;
     for line in s.lines() {
         let sp: Vec<_> = line.split_ascii_whitespace().collect();
         let theirs = Score::from_str(sp[0]).unwrap();
         let outcome = Outcome::from_str(sp[1]).unwrap();
-        use Score::*;
         let ours = match (theirs, outcome) {
-            (Score::Rock, Outcome::Win) => Paper,
-            (Score::Rock, Outcome::Lose) => Scissors,
-            (Score::Rock, Outcome::Draw) => Rock,
-            (Score::Paper, Outcome::Win) => Scissors,
-            (Score::Paper, Outcome::Lose) => Rock,
-            (Score::Paper, Outcome::Draw) => Paper,
-            (Score::Scissors, Outcome::Win) => Rock,
-            (Score::Scissors, Outcome::Lose) => Paper,
-            (Score::Scissors, Outcome::Draw) => Scissors,
+            (t, Outcome::Draw) => t,
+            (t, Outcome::Win) => t.greater(),
+            (t, Outcome::Lose) => t.less(),
         };
         let score = score(ours, theirs);
         tot += score.0;
     }
-    println!("{tot}");
+    tot
+}
+
+fn main() {
+    let s = load_input();
+    let p1 = part1(&s);
+    let p2 = part2(&s);
+    assert_eq!(p1, 11449);
+    assert_eq!(p2, 13187);
+    println!("{p1}");
+    println!("{p2}");
 }

@@ -12,14 +12,18 @@ fn priority(b: u8) -> usize {
 
 fn main() {
     let s = load_input();
-    let mut tot = 0;
+    let mut sets: Vec<HashSet<u8, RandomState>> = Vec::new();
     for line in s.lines() {
-        let v: Vec<u8> = line.bytes().collect();
-        let (a, b) = v.split_at(v.len() / 2);
-        let a: HashSet<u8, RandomState> = HashSet::from_iter(a.iter().cloned());
-        let b = HashSet::from_iter(b.iter().cloned());
-        let both = a.intersection(&b).next().unwrap();
-        tot += priority(*both);
+        sets.push(HashSet::from_iter(line.bytes()));
     }
-    println!("part 1 = {tot}");
+
+    let mut tot = 0;
+    for s in sets.chunks(3) {
+        let (a, b, c) = (&s[0], &s[1], &s[2]);
+        let ab: HashSet<u8, RandomState> =
+            HashSet::from_iter(a.intersection(b).cloned());
+        let abc = ab.intersection(c).next().unwrap();
+        tot += priority(*abc);
+    }
+    println!("part 2 = {tot}");
 }

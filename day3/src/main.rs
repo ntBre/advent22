@@ -11,16 +11,13 @@ fn priority(b: u8) -> usize {
 }
 
 fn part1(s: &str) -> usize {
-    let mut tot = 0;
-    for line in s.lines() {
-        let v: Vec<u8> = line.bytes().collect();
-        let (a, b) = v.split_at(v.len() / 2);
-        let a: HashSet<u8, RandomState> = HashSet::from_iter(a.iter().cloned());
-        let b = HashSet::from_iter(b.iter().cloned());
-        let both = a.intersection(&b).next().unwrap();
-        tot += priority(*both);
-    }
-    tot
+    s.lines()
+        .map(|line| {
+            let (a, b) = line.split_at(line.len() / 2);
+            let i = a.find(&b.chars().collect::<Vec<_>>()[..]).unwrap();
+            priority(a.as_bytes()[i])
+        })
+        .sum()
 }
 
 fn part2(s: &str) -> usize {

@@ -14,4 +14,5 @@ echo 'advent22 = { path = "../" }' >> $dir/Cargo.toml
 sed  -i "/members/a\"$dir\"," Cargo.toml
 sed -i '1i use advent22::*;' $dir/src/main.rs
 
+touch $dir/.projectile
 emacsclient -n -r $dir/src/main.rs

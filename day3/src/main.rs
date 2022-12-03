@@ -1,13 +1,12 @@
-use std::collections::{hash_map::RandomState, HashSet};
+use std::collections::{hash_map::RandomState, HashMap, HashSet};
 
 use advent22::*;
 
 fn priority(b: u8) -> usize {
-    if (b'A'..=b'Z').contains(&b) {
-        (b - b'A' + 27) as usize
-    } else {
-        (b - b'a' + 1) as usize
-    }
+    (b'a'..=b'z')
+        .chain(b'A'..=b'Z')
+        .zip(1..=52)
+        .collect::<HashMap<_, _>>()[&b]
 }
 
 fn part1(s: &str) -> usize {

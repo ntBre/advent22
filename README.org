@@ -1,137 +1,160 @@
-* Alternate solutions
-** Day 1
-*** Bash (mostly awk)
-    just change 1q to 3q for part 2
-    #+begin_src shell
-      awk '/^$/ {print sum; sum = 0}; {sum += $1}; END {print sum}' day1/input \
-	  | sort -nr | sed 1q | paste -sd+ | bc -l
-    #+end_src
-*** Just awk
-    ~s - 1~ to ~s - 3~ for part 2
-    #+begin_src awk :in-file day1/input
-      /^$/ {
-	  sums[s++] = sum;
-	  sum = 0
-      }
-
-      {
-	  sum += $1
-      }
-
-      END {
-	  asort(sums)
-	  for (i = s; i > s - 1; i--) tot += sums[i]
-	  print tot
-      }
-    #+end_src
-** Day 2
-*** my awk
-   #+begin_src awk :in-file day2/input
-     BEGIN {
-	 hand["A"] = 1 # rock
-	 hand["B"] = 2 # paper
-	 hand["C"] = 3 # scissors
-	 hand["X"] = 1 # rock
-	 hand["Y"] = 2 # paper
-	 hand["Z"] = 3 # scissors
-     }
-
-     function score(a, b) {
-	 o = 0
-	 t = 0
-	 if (a == b) {
-	     # draw
-	     o += 3
-	     t += 3;
-	 } else if (a == 1 && b == 2) {
-	     t += 6
-	 } else if (a == 1 && b == 3) {
-	     o += 6
-	 } else if (a == 2 && b == 1) {
-	     o += 6
-	 } else if (a == 2 && b == 3) {
-	     t += 6
-	 } else if (a == 3 && b == 1) {
-	     t += 6
-	 } else if (a == 3 && b == 2) {
-	     o += 6
-	 }
-	 o += a
-	 t += b
-	 return o" "t
+#+startup: overview
+* About
+  My main solutions are in Rust, but this document holds other solutions, mostly
+  in AWK so far
+* Table of Contents
+  - [[*Day 1][Day 1]]
+  - [[*Day 2][Day 2]]
+  - [[*Day 4][Day 4]]
+* Day 1
+** Bash (mostly awk)
+   just change 1q to 3q for part 2
+   #+begin_src shell
+     awk '/^$/ {print sum; sum = 0}; {sum += $1}; END {print sum}' day1/input \
+	 | sort -nr | sed 1q | paste -sd+ | bc -l
+   #+end_src
+** Just awk
+   ~s - 1~ to ~s - 3~ for part 2
+   #+begin_src awk :in-file day1/input
+     /^$/ {
+	 sums[s++] = sum;
+	 sum = 0
      }
 
      {
-	 # t"h"eirs
-	 h = hand[$1]
-	 # o"u"tcome
-	 u = hand[$2]
-	 switch (h" "u) {
-	 case "2 2":
-	 case "1 2":
-	 case "3 2":
-	     ours = h
-	     break;
-	 case "1 1":
-	     ours = 3
-	     break;
-	 case "2 1":
-	     ours = 1
-	     break;
-	 case "3 1":
-	     ours = 2
-	     break;
-	 case "1 3":
-	     ours = 2
-	     break;
-	 case "2 3":
-	     ours = 3
-	     break;
-	 case "3 3":
-	     ours = 1
-	     break;
-	 }
-	 theirs = h
-	 s = score(ours, theirs)
-	 split(s, a, " ")
-	 o = a[1]
-	 t = a[2]
-	 # print ours, theirs, o, t
-	 tot += o
+	 sum += $1
      }
 
-     END { print tot }
+     END {
+	 asort(sums)
+	 for (i = s; i > s - 1; i--) tot += sums[i]
+	 print tot
+     }
+   #+end_src
+* Day 2
+** my awk
+  #+begin_src awk :in-file day2/input
+    BEGIN {
+	hand["A"] = 1 # rock
+	hand["B"] = 2 # paper
+	hand["C"] = 3 # scissors
+	hand["X"] = 1 # rock
+	hand["Y"] = 2 # paper
+	hand["Z"] = 3 # scissors
+    }
+
+    function score(a, b) {
+	o = 0
+	t = 0
+	if (a == b) {
+	    # draw
+	    o += 3
+	    t += 3;
+	} else if (a == 1 && b == 2) {
+	    t += 6
+	} else if (a == 1 && b == 3) {
+	    o += 6
+	} else if (a == 2 && b == 1) {
+	    o += 6
+	} else if (a == 2 && b == 3) {
+	    t += 6
+	} else if (a == 3 && b == 1) {
+	    t += 6
+	} else if (a == 3 && b == 2) {
+	    o += 6
+	}
+	o += a
+	t += b
+	return o" "t
+    }
+
+    {
+	# t"h"eirs
+	h = hand[$1]
+	# o"u"tcome
+	u = hand[$2]
+	switch (h" "u) {
+	case "2 2":
+	case "1 2":
+	case "3 2":
+	    ours = h
+	    break;
+	case "1 1":
+	    ours = 3
+	    break;
+	case "2 1":
+	    ours = 1
+	    break;
+	case "3 1":
+	    ours = 2
+	    break;
+	case "1 3":
+	    ours = 2
+	    break;
+	case "2 3":
+	    ours = 3
+	    break;
+	case "3 3":
+	    ours = 1
+	    break;
+	}
+	theirs = h
+	s = score(ours, theirs)
+	split(s, a, " ")
+	o = a[1]
+	t = a[2]
+	# print ours, theirs, o, t
+	tot += o
+    }
+
+    END { print tot }
+  #+end_src
+
+  #+RESULTS:
+  : 13187
+** awk after reading [[https://www.reddit.com/r/adventofcode/comments/zac2v2/2022_day_2_solutions/][reddit]]
+   you can just write down all of the possible options and look up the answer.
+   it could be even shorter if we could initialize a literal array without all
+   of the assignments. you can translate this straight to Rust with a
+   ~HashMap::from([...])~
+   #+begin_src awk :in-file day2/input
+     BEGIN {
+	 part1["A X"] = 1 + 3; part1["A Y"] = 2 + 6; part1["A Z"] = 3 + 0;
+	 part1["B X"] = 1 + 0; part1["B Y"] = 2 + 3; part1["B Z"] = 3 + 6;
+	 part1["C X"] = 1 + 6; part1["C Y"] = 2 + 0; part1["C Z"] = 3 + 3;
+
+	 part2["A X"] = 3 + 0; part2["A Y"] = 1 + 3; part2["A Z"] = 2 + 6;
+	 part2["B X"] = 1 + 0; part2["B Y"] = 2 + 3; part2["B Z"] = 3 + 6;
+	 part2["C X"] = 2 + 0; part2["C Y"] = 3 + 3; part2["C Z"] = 1 + 6;
+
+     }
+     {
+	 p1 += part1[$1" "$2]
+	 p2 += part2[$1" "$2]
+     }
+     END { print p1; print p2 }
    #+end_src
 
    #+RESULTS:
-   : 13187
-*** awk after reading [[https://www.reddit.com/r/adventofcode/comments/zac2v2/2022_day_2_solutions/][reddit]]
-    you can just write down all of the possible options and look up the answer.
-    it could be even shorter if we could initialize a literal array without all
-    of the assignments. you can translate this straight to Rust with a
-    ~HashMap::from([...])~
-    #+begin_src awk :in-file day2/input
-      BEGIN {
-	  part1["A X"] = 1 + 3; part1["A Y"] = 2 + 6; part1["A Z"] = 3 + 0;
-	  part1["B X"] = 1 + 0; part1["B Y"] = 2 + 3; part1["B Z"] = 3 + 6;
-	  part1["C X"] = 1 + 6; part1["C Y"] = 2 + 0; part1["C Z"] = 3 + 3;
+   | 11449 |
+   | 13187 |
+* Day 4
+  #+begin_src awk :in-file day4/input
+    BEGIN { FS = "," }
+    function contains(a, b) {return a[1] >= b[1] && a[2] <= b[2]}
+    function contains_any(a, b) {return !(a[1] > b[2] || a[2] < b[1])}
+    {
+	split($1, a, "-");
+	split($2, b, "-");
+	sum1 += (contains(a, b) || contains(b, a)) ? 1 : 0
+	sum2 += (contains_any(a, b) || contains_any(b, a)) ? 1 : 0
+    }
+    END { print sum1, sum2 }
+  #+end_src
 
-	  part2["A X"] = 3 + 0; part2["A Y"] = 1 + 3; part2["A Z"] = 2 + 6;
-	  part2["B X"] = 1 + 0; part2["B Y"] = 2 + 3; part2["B Z"] = 3 + 6;
-	  part2["C X"] = 2 + 0; part2["C Y"] = 3 + 3; part2["C Z"] = 1 + 6;
-
-      }
-      {
-	  p1 += part1[$1" "$2]
-	  p2 += part2[$1" "$2]
-      }
-      END { print p1; print p2 }
-    #+end_src
-
-    #+RESULTS:
-    | 11449 |
-    | 13187 |
-
+  #+RESULTS:
+  : 515 883
+* Footer
 # Local Variables:
 # org-confirm-babel-evaluate: nil
 # End:

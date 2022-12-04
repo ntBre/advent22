@@ -112,6 +112,7 @@
 
   #+RESULTS:
   : 13187
+  
 ** awk after reading [[https://www.reddit.com/r/adventofcode/comments/zac2v2/2022_day_2_solutions/][reddit]]
    you can just write down all of the possible options and look up the answer.
    it could be even shorter if we could initialize a literal array without all
@@ -138,6 +139,7 @@
    #+RESULTS:
    | 11449 |
    | 13187 |
+   
 * Day 4
   #+begin_src awk :in-file day4/input
     BEGIN { FS = "," }
@@ -154,6 +156,7 @@
 
   #+RESULTS:
   : 515 883
+  
 * Footer
 # Local Variables:
 # org-confirm-babel-evaluate: nil

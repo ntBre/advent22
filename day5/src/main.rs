@@ -23,8 +23,29 @@ impl Display for Board {
     }
 }
 
-fn main() {
-    let s = load_input();
+fn single(c: &usize, stacks: &mut [VecDeque<char>], f: &usize, t: &usize) {
+    for _ in 0..*c + 1 {
+        let a = stacks[*f].pop_front().unwrap();
+        stacks[*t].push_front(a);
+    }
+}
+
+fn multi(c: &usize, stacks: &mut [VecDeque<char>], f: &usize, t: &usize) {
+    let mut tmp = Vec::new();
+    for _ in 0..*c + 1 {
+        let a = stacks[*f].pop_front().unwrap();
+        tmp.push(a);
+    }
+    tmp.reverse();
+    for tm in tmp {
+        stacks[*t].push_front(tm);
+    }
+}
+
+fn inner(
+    s: &str,
+    fun: fn(&usize, &mut [VecDeque<char>], &usize, &usize),
+) -> String {
     let mut in_stacks = true;
     let mut stacks = Vec::new();
     for line in s.lines() {
@@ -51,17 +72,19 @@ fn main() {
                 .map(|u| u - 1)
                 .collect();
             let [c, f, t] = &sp[..] else { todo!() };
-            let mut tmp = Vec::new();
-            for _ in 0..*c + 1 {
-                let a = stacks[*f].pop_front().unwrap();
-                tmp.push(a);
-            }
-            tmp.reverse();
-            for tm in tmp {
-                stacks[*t].push_front(tm);
-            }
+            fun(c, &mut stacks, f, t);
         }
     }
     let chars: String = stacks.iter().map(|s| s[0]).collect();
-    println!("{}", chars);
+    chars
+}
+
+fn main() {
+    let s = load_input();
+    let p1 = inner(&s, single);
+    let p2 = inner(&s, multi);
+    assert_eq!(p1, "RTGWZTHLD");
+    assert_eq!(p2, "STHGRZZFR");
+    println!("{}", p1);
+    println!("{}", p2);
 }

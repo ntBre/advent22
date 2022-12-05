@@ -51,9 +51,14 @@ fn main() {
                 .map(|u| u - 1)
                 .collect();
             let [c, f, t] = &sp[..] else { todo!() };
+            let mut tmp = Vec::new();
             for _ in 0..*c + 1 {
                 let a = stacks[*f].pop_front().unwrap();
-                stacks[*t].push_front(a);
+                tmp.push(a);
+            }
+            tmp.reverse();
+            for tm in tmp {
+                stacks[*t].push_front(tm);
             }
         }
     }

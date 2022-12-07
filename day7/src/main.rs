@@ -29,8 +29,9 @@ struct File {
     typ: FileType,
 }
 
+// idea taken from
+// https://rust-leipzig.github.io/architecture/2016/12/20/idiomatic-trees-in-rust/
 #[derive(Debug)]
-// idea taken from https://rust-leipzig.github.io/architecture/2016/12/20/idiomatic-trees-in-rust/
 struct FileTree {
     nodes: Vec<File>,
     cur: usize,
@@ -112,7 +113,9 @@ impl FileTree {
                 size,
             },
         });
-        let FileType::Dir{  children, .. } = &mut self.nodes[self.cur].typ else { panic!()};
+        let FileType::Dir{ children, .. } = &mut self.nodes[self.cur].typ else {
+	    panic!()
+	};
         children.push(n);
     }
 }
@@ -133,22 +136,34 @@ fn main() {
                 "ls" => in_ls = true,
                 _ => panic!("unrecognized command {cmd}"),
             }
-        } else if in_ls {
-            if !line.starts_with("dir") {
-                let sp: Vec<_> = line.split_ascii_whitespace().collect();
-                let size = sp[0].parse().unwrap();
-                file_tree.add_file(sp[1], size);
-            }
+        } else if in_ls && !line.starts_with("dir") {
+            let sp: Vec<_> = line.split_ascii_whitespace().collect();
+            let size = sp[0].parse().unwrap();
+            file_tree.add_file(sp[1], size);
         }
     }
-    let mut tot = 0;
-    for (i, node) in file_tree.nodes.iter().enumerate() {
-        if node.typ.is_dir() {
-            let size = file_tree.size(i);
-            if size <= 100000 {
-                tot += size;
+    const MAX: usize = 70000000;
+    const NEED: usize = 30000000;
+    let cur_used = file_tree.size(0);
+    let cur_avail = MAX - cur_used;
+    let want = NEED - cur_avail;
+    let mut dirs: Vec<_> = file_tree
+        .nodes
+        .iter()
+        .enumerate()
+        .flat_map(|(i, node)| {
+            if node.typ.is_dir() {
+                let size = file_tree.size(i);
+                if size >= want {
+                    Some(size)
+                } else {
+                    None
+                }
+            } else {
+                None
             }
-        }
-    }
-    println!("{tot}")
+        })
+        .collect();
+    dirs.sort();
+    dbg!(dirs);
 }

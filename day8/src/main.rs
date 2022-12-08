@@ -13,69 +13,60 @@ fn main() {
 
     let rows = grid.len();
     let cols = grid[0].len();
-    let mut tot = 0;
+    let mut scores = vec![vec![1; cols]; rows];
     for (i, row) in grid.iter().enumerate() {
         for (j, col) in row.iter().enumerate() {
             if i == 0 || i == rows - 1 {
-                tot += 1;
+                scores[i][j] = 0;
                 continue;
             }
             if j == 0 || j == cols - 1 {
-                tot += 1;
+                scores[i][j] = 0;
                 continue;
             }
 
-            let mut found = true;
-            for ii in 0..i {
+            let mut count = 0;
+            for ii in (0..i).rev() {
+                count += 1;
                 if *col <= grid[ii][j] {
-                    found = false;
                     break;
                 }
             }
-
-            if found {
-                tot += 1;
-                continue;
-            }
-
-            found = true;
+            scores[i][j] *= count;
+            count = 0;
             for ii in i + 1..rows {
+                count += 1;
                 if *col <= grid[ii][j] {
-                    found = false;
                     break;
                 }
             }
-            if found {
-                tot += 1;
-                continue;
-            }
+            scores[i][j] *= count;
+            count = 0;
 
-            found = true;
-            for jj in 0..j {
+            for jj in (0..j).rev() {
+                count += 1;
                 if *col <= grid[i][jj] {
-                    found = false;
                     break;
                 }
             }
+            scores[i][j] *= count;
+            count = 0;
 
-            if found {
-                tot += 1;
-                continue;
-            }
-
-            found = true;
             for jj in j + 1..cols {
+                count += 1;
                 if *col <= grid[i][jj] {
-                    found = false;
                     break;
                 }
             }
-
-            if found {
-                tot += 1;
-                continue;
-            }
+            scores[i][j] *= count;
         }
     }
-    println!("{tot}");
+    println!(
+        "{}",
+        scores
+            .iter()
+            .map(|row| row.iter().max().unwrap())
+            .max()
+            .unwrap()
+    );
 }

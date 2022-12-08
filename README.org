@@ -220,6 +220,112 @@
   #+RESULTS:
   : 3444
 
+* Day 7
+  Not my solution, but the top person's ([[https://github.com/betaveros][betaveros]]) from the leaderboard in his
+  language [[https://github.com/betaveros/noulith][noulith]] is pretty cool. I expected that you could ignore constructing
+  a real directory tree, but I didn't think actually explore that option in the
+  code. It looks like under the assumption that you only list each directory's
+  contents once, you can treat the current directory as a stack and push the
+  file's size to every directory on the stack. With this, betaveros finished the
+  challenge in just over 5 minutes compared to the more than 2 hours in my Rust
+  video. I translate his [[https://github.com/betaveros/advent-of-code-2022/blob/9d954fbcc55f97f133edc4d7215a1eb73e1af9be/p7.noul][noulith solution]] to awk here:
+
+  #+begin_src awk :in-file day7/input :results output
+    BEGIN {
+	# stack pointer since we can't push/pop in awk
+	stack[1] = "/"
+	p = 2
+    }
+    $2 ~ /^ls$/ { next }
+    $1 ~ /^dir$/ { next }
+    $2 ~ /^cd$/ {
+	if ($3 == "/") {
+	    stack[1] = "/"
+	    p = 2
+	}
+	else if ($3 == "..") p--
+	else stack[p++] = $3
+	next
+    }
+    {
+	# otherwise we're in a file
+	for (i = p-1; i >= 1; i--) {
+    if (stack[i] == "ddhfvv") print $0, "adding", sizes[stack[i]]
+	    sizes[stack[i]] += $1
+	}
+    }
+    END {
+    print "missing: ", sizes["ddhfvv"]
+    print "missing: ", sizes["jjshzrhd"]
+    for (key in sizes) {
+	    size = sizes[key]
+	    if (size <= 100000) {
+    print size, key
+		tot += size
+	    }
+	}
+	print tot
+    }
+  #+end_src
+
+  #+RESULTS:
+  #+begin_example
+  56038 gvbzwds.cff adding 
+  308363 rdzj.sqr adding 56038
+  287177 zznmdh.nhn adding 364401
+  128210 btgrv.zqp adding 651578
+  205284 dnt.jrd adding 779788
+  135774 pmnbbb adding 985072
+  292185 zsqz adding 1120846
+  277089 bcpdvwqs.dmw adding 1413031
+  262922 hghrcqfd.hpn adding 1690120
+  95245 vmmcdr adding 1953042
+  172326 qsrcb.fpd adding 2048287
+  203623 fvhmzqc.dmm adding 2220613
+  60280 vmmcdr adding 2424236
+  202499 ddhfvv adding 2484516
+  265355 ddhfvv.bpb adding 2687015
+  244640 nhdztzsg adding 2952370
+  28659 glfpm.hnp adding 3197010
+  274896 hrtbfww.gts adding 3225669
+  228636 zrn.ftn adding 3500565
+  237410 djtchhmw.fjz adding 3729201
+  209100 hghrcqfd.hpn adding 3966611
+  317411 nsgtmddt.jvj adding 4175711
+  30033 pbhc.blz adding 4493122
+  8818 pwf.vjv adding 4523155
+  249328 cwftvdws adding 4531973
+  41124 pwmzz adding 4781301
+  99884 qbvpslt adding 4822425
+  49107 fvhmzqc.slp adding 4922309
+  49107 fvhmzqc.slp adding 4971416
+  115288 gfdzqrb adding 5020523
+  248419 hrtbfww.gts adding 5135811
+  14211 qffwlmvm.fhp adding 5384230
+  67495 wwttgflg.rcl adding 5398441
+  278463 btgrv.ldc adding 5465936
+  199548 qwc adding 5744399
+  missing:  5943947
+  missing:  5798851
+  95245 jlbjlzzs
+  63581 rrcnhbn
+  70881 ncwldt
+  67713 mfhbd
+  84423 gdc
+  76792 smprwhmg
+  91244 sdrjlqqm
+  43196 lbpmtft
+  17068 fjwwn
+  60280 wwghpsds
+  15584 qhb
+  82379 cbcwz
+  65889 npdccs
+  49107 thwccb
+  43196 tlhc
+  69494 czqj
+  996072
+  #+end_example
+
 * Footer
 # Local Variables:
 # org-confirm-babel-evaluate: nil

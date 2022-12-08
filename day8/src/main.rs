@@ -16,7 +16,6 @@ fn part1(grid: &Vec<Vec<u32>>) -> usize {
                 || grid[i].iter().rev().take(cols - j - 1).all(|x| col > x)
             {
                 tot += 1;
-                continue;
             }
         }
     }
@@ -29,49 +28,34 @@ fn part2(grid: Vec<Vec<u32>>) -> usize {
     let mut scores = vec![vec![1; cols]; rows];
     for (i, row) in grid.iter().enumerate() {
         for (j, col) in row.iter().enumerate() {
-            if i == 0 || i == rows - 1 {
+            if i == 0 || i == rows - 1 || j == 0 || j == cols - 1 {
                 scores[i][j] = 0;
                 continue;
             }
-            if j == 0 || j == cols - 1 {
-                scores[i][j] = 0;
-                continue;
-            }
-
-            let mut count = 0;
-            for ii in (0..i).rev() {
-                count += 1;
-                if *col <= grid[ii][j] {
-                    break;
-                }
-            }
-            scores[i][j] *= count;
-            count = 0;
-            for ii in i + 1..rows {
-                count += 1;
-                if *col <= grid[ii][j] {
-                    break;
-                }
-            }
-            scores[i][j] *= count;
-            count = 0;
-
-            for jj in (0..j).rev() {
-                count += 1;
-                if *col <= grid[i][jj] {
-                    break;
-                }
-            }
-            scores[i][j] *= count;
-            count = 0;
-
-            for jj in j + 1..cols {
-                count += 1;
-                if *col <= grid[i][jj] {
-                    break;
-                }
-            }
-            scores[i][j] *= count;
+            scores[i][j] = (1 + grid
+                .iter()
+                .take(i)
+                .rev()
+                .position(|x| *col <= x[j])
+                .unwrap_or(i - 1))
+		// really not sure why this one isn't +1 like the others, but it
+		// works like this
+                * grid
+                    .iter()
+                    .skip(i + 1)
+                    .position(|x| *col <= x[j])
+                    .unwrap_or(rows - i - 1)
+                * (1 + grid[i]
+                    .iter()
+                    .take(j)
+                    .rev()
+                    .position(|x| col <= x)
+                    .unwrap_or(j - 1))
+                * (1 + grid[i]
+                    .iter()
+                    .skip(j + 1)
+                    .position(|x| col <= x)
+                    .unwrap_or(cols - j - 1));
         }
     }
     *scores
@@ -94,8 +78,8 @@ fn main() {
 
     let p1 = part1(&grid);
     let p2 = part2(grid);
-    assert_eq!(p1, 1843);
-    assert_eq!(p2, 180000);
     println!("{}", p1);
     println!("{}", p2);
+    assert_eq!(p1, 1843);
+    assert_eq!(p2, 180000);
 }

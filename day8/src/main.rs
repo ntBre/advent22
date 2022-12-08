@@ -6,17 +6,15 @@ fn part1(grid: &Vec<Vec<u32>>) -> usize {
     let mut tot = 0;
     for (i, row) in grid.iter().enumerate() {
         for (j, col) in row.iter().enumerate() {
-            if i == 0
+            tot += (i == 0
                 || i == rows - 1
                 || j == 0
                 || j == cols - 1
                 || grid.iter().take(i).all(|x| *col > x[j])
                 || grid.iter().rev().take(rows - i - 1).all(|x| *col > x[j])
                 || grid[i].iter().take(j).all(|x| col > x)
-                || grid[i].iter().rev().take(cols - j - 1).all(|x| col > x)
-            {
-                tot += 1;
-            }
+                || grid[i].iter().rev().take(cols - j - 1).all(|x| col > x))
+                as usize
         }
     }
     tot

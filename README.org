@@ -35,85 +35,85 @@
    #+end_src
 * Day 2
 ** my awk
-  #+begin_src awk :in-file day2/input
-    BEGIN {
-	hand["A"] = 1 # rock
-	hand["B"] = 2 # paper
-	hand["C"] = 3 # scissors
-	hand["X"] = 1 # rock
-	hand["Y"] = 2 # paper
-	hand["Z"] = 3 # scissors
-    }
+   #+begin_src awk :in-file day2/input
+     BEGIN {
+	 hand["A"] = 1 # rock
+	 hand["B"] = 2 # paper
+	 hand["C"] = 3 # scissors
+	 hand["X"] = 1 # rock
+	 hand["Y"] = 2 # paper
+	 hand["Z"] = 3 # scissors
+     }
 
-    function score(a, b) {
-	o = 0
-	t = 0
-	if (a == b) {
-	    # draw
-	    o += 3
-	    t += 3;
-	} else if (a == 1 && b == 2) {
-	    t += 6
-	} else if (a == 1 && b == 3) {
-	    o += 6
-	} else if (a == 2 && b == 1) {
-	    o += 6
-	} else if (a == 2 && b == 3) {
-	    t += 6
-	} else if (a == 3 && b == 1) {
-	    t += 6
-	} else if (a == 3 && b == 2) {
-	    o += 6
-	}
-	o += a
-	t += b
-	return o" "t
-    }
+     function score(a, b) {
+	 o = 0
+	 t = 0
+	 if (a == b) {
+	     # draw
+	     o += 3
+	     t += 3;
+	 } else if (a == 1 && b == 2) {
+	     t += 6
+	 } else if (a == 1 && b == 3) {
+	     o += 6
+	 } else if (a == 2 && b == 1) {
+	     o += 6
+	 } else if (a == 2 && b == 3) {
+	     t += 6
+	 } else if (a == 3 && b == 1) {
+	     t += 6
+	 } else if (a == 3 && b == 2) {
+	     o += 6
+	 }
+	 o += a
+	 t += b
+	 return o" "t
+     }
 
-    {
-	# t"h"eirs
-	h = hand[$1]
-	# o"u"tcome
-	u = hand[$2]
-	switch (h" "u) {
-	case "2 2":
-	case "1 2":
-	case "3 2":
-	    ours = h
-	    break;
-	case "1 1":
-	    ours = 3
-	    break;
-	case "2 1":
-	    ours = 1
-	    break;
-	case "3 1":
-	    ours = 2
-	    break;
-	case "1 3":
-	    ours = 2
-	    break;
-	case "2 3":
-	    ours = 3
-	    break;
-	case "3 3":
-	    ours = 1
-	    break;
-	}
-	theirs = h
-	s = score(ours, theirs)
-	split(s, a, " ")
-	o = a[1]
-	t = a[2]
-	# print ours, theirs, o, t
-	tot += o
-    }
+     {
+	 # t"h"eirs
+	 h = hand[$1]
+	 # o"u"tcome
+	 u = hand[$2]
+	 switch (h" "u) {
+	 case "2 2":
+	 case "1 2":
+	 case "3 2":
+	     ours = h
+	     break;
+	 case "1 1":
+	     ours = 3
+	     break;
+	 case "2 1":
+	     ours = 1
+	     break;
+	 case "3 1":
+	     ours = 2
+	     break;
+	 case "1 3":
+	     ours = 2
+	     break;
+	 case "2 3":
+	     ours = 3
+	     break;
+	 case "3 3":
+	     ours = 1
+	     break;
+	 }
+	 theirs = h
+	 s = score(ours, theirs)
+	 split(s, a, " ")
+	 o = a[1]
+	 t = a[2]
+	 # print ours, theirs, o, t
+	 tot += o
+     }
 
-    END { print tot }
-  #+end_src
+     END { print tot }
+   #+end_src
 
-  #+RESULTS:
-  : 13187
+   #+RESULTS:
+   : 13187
 
 ** awk after reading [[https://www.reddit.com/r/adventofcode/comments/zac2v2/2022_day_2_solutions/][reddit]]
    you can just write down all of the possible options and look up the answer.

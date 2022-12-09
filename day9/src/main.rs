@@ -111,10 +111,8 @@ impl Rope {
     }
 }
 
-fn main() {
-    let l = 10;
+fn inner(s: &str, l: usize) -> usize {
     let mut ropes = vec![Rope::new(0, 0); l];
-    let s = load_input();
     let mut counter = HashSet::new();
     counter.insert((ropes[l - 1].x, ropes[l - 1].y));
     for line in s.lines() {
@@ -134,5 +132,15 @@ fn main() {
             counter.insert((ropes[l - 1].x, ropes[l - 1].y));
         }
     }
-    println!("{}", counter.len());
+    counter.len()
+}
+
+fn main() {
+    let s = load_input();
+    let p1 = inner(&s, 2);
+    let p2 = inner(&s, 10);
+    println!("{}", p1);
+    println!("{}", p2);
+    assert_eq!(p1, 6011);
+    assert_eq!(p2, 2419);
 }

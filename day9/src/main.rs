@@ -67,18 +67,14 @@ impl Rope {
         };
     }
 
-    fn dist(&self, other: &Self) -> usize {
-        let sx = self.x;
-        let sy = self.y;
-        let ox = other.x;
-        let oy = other.y;
-        f64::sqrt(((sx - ox).pow(2) + (sy - oy).pow(2)) as f64).round() as usize
+    fn dist(&self, other: &Self) -> isize {
+        (self.x - other.x).pow(2) + (self.y - other.y).pow(2)
     }
 
     /// return direction for `other` to move based on position of `self`
     fn compare(&self, other: &Self) -> Option<Direction> {
         use Direction::*;
-        if self.dist(other) <= 1 {
+        if self.dist(other) <= 2 {
             return None;
         }
         if self.x == other.x {

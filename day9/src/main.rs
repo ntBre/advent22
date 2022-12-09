@@ -3,7 +3,7 @@ use std::{collections::HashSet, str::FromStr, string::ParseError};
 
 use advent22::{load_input, load_sample};
 
-#[derive(Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 struct Rope {
     x: isize,
     y: isize,
@@ -112,21 +112,26 @@ impl Rope {
 }
 
 fn main() {
-    let mut head = Rope::new(0, 0);
-    let mut tail = Rope::new(0, 0);
+    let l = 10;
+    let mut ropes = vec![Rope::new(0, 0); l];
     let s = load_input();
     let mut counter = HashSet::new();
-    counter.insert((tail.x, tail.y));
+    counter.insert((ropes[l - 1].x, ropes[l - 1].y));
     for line in s.lines() {
         let sp: Vec<_> = line.split_ascii_whitespace().collect();
         let d = Direction::from_str(sp[0]).unwrap();
         let m = usize::from_str(sp[1]).unwrap();
         for _ in 0..m {
-            head.mov(d);
-            if let Some(dir) = head.compare(&tail) {
-                tail.mov(dir);
-                counter.insert((tail.x, tail.y));
+            // move the head
+            ropes[0].mov(d);
+            let mut head = ropes[0];
+            for (i, tail) in ropes[1..].iter_mut().enumerate() {
+                if let Some(dir) = head.compare(tail) {
+                    tail.mov(dir);
+                }
+                head = *tail;
             }
+            counter.insert((ropes[l - 1].x, ropes[l - 1].y));
         }
     }
     println!("{}", counter.len());

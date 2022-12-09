@@ -1,7 +1,6 @@
-#![allow(unused)]
 use std::{collections::HashSet, str::FromStr, string::ParseError};
 
-use advent22::{load_input, load_sample};
+use advent22::*;
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 struct Rope {
@@ -119,7 +118,7 @@ fn inner(s: &str, l: usize) -> usize {
             // move the head
             ropes[0].mov(d);
             let mut head = ropes[0];
-            for (i, tail) in ropes[1..].iter_mut().enumerate() {
+            for tail in ropes[1..].iter_mut() {
                 if let Some(dir) = head.compare(tail) {
                     tail.mov(dir);
                 }

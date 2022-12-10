@@ -34,7 +34,7 @@ fn main() {
 
     for row in screen.chunks(40) {
         for p in row {
-            print!("{}", if *p { "#" } else { "." });
+            print!("{}", if *p { "⬛" } else { "⬜" });
         }
         println!();
     }

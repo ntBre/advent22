@@ -1,6 +1,5 @@
 use advent22::*;
 
-#[allow(unused)]
 fn main() {
     let s = load_input();
 
@@ -12,13 +11,15 @@ fn main() {
         new_lines.push(line);
     }
 
-    let mut x = 1;
+    let mut x: isize = 1;
     let mut tot = 0;
-    let mut cycle = 1;
-    for (i, line) in new_lines.iter().enumerate() {
-        let i = i as isize + 1;
-        if i == 20 || (i > 40 && (i - 20) % 40 == 0) {
-            tot += x * i;
+    let mut screen = Vec::new();
+    for (cycle, line) in new_lines.iter().enumerate() {
+        let px = cycle % 40;
+        screen.push((x - 1..=x + 1).contains(&(px as isize)));
+        let cycle = cycle as isize + 1;
+        if cycle == 20 || (cycle > 40 && (cycle - 20) % 40 == 0) {
+            tot += x * cycle;
         }
         if line.starts_with("addx") {
             let v: isize = line
@@ -29,6 +30,13 @@ fn main() {
                 .unwrap();
             x += v;
         }
+    }
+
+    for row in screen.chunks(40) {
+        for p in row {
+            print!("{}", if *p { "#" } else { "." });
+        }
+        println!();
     }
     println!("{tot}");
 }

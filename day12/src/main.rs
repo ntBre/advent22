@@ -1,3 +1,4 @@
+#![feature(let_chains)]
 use advent22::*;
 use std::{
     collections::{HashMap, HashSet},
@@ -53,6 +54,7 @@ fn to_height(c: char) -> usize {
     map[&c]
 }
 
+#[derive(Clone)]
 struct Grid(Vec<Vec<usize>>);
 impl Grid {
     fn shape(&self) -> (usize, usize) {
@@ -143,16 +145,21 @@ fn generate_moves(
         .collect()
 }
 
-fn main() {
-    let s = load_input();
-    let (grid, start, end) = load_grid(s);
+fn find_path(
+    start: (usize, usize),
+    grid: Grid,
+    end: (usize, usize),
+    max: Option<i32>,
+) -> i32 {
     let mut tree = Tree::new(start);
     // build tree of legal moves at every position
     let mut to_visit = vec![0];
     let mut round = 1;
-    let now = std::time::Instant::now();
     let mut seen = HashSet::new();
     'outer: loop {
+        if let Some(max) = max  && round >= max {
+	    return round
+	}
         let tv = std::mem::take(&mut to_visit);
         for cur in tv {
             let moves = generate_moves(&tree, &tree.nodes[cur], &grid);
@@ -167,15 +174,33 @@ fn main() {
                 seen.insert(mov);
             }
         }
-        dbg!(round);
         round += 1;
     }
-    println!(
-        "finished after {:.2e}",
-        now.elapsed().as_nanos() as f64 / 1e9
-    );
-    dbg!(round);
-    // dbg!(round);
-    // find paths through tree terminating at end
-    // choose the shortest one
+    round
+}
+
+fn main() {
+    let s = load_input();
+    let (grid, _, end) = load_grid(s);
+    let mut starts = Vec::new();
+    for (i, row) in grid.0.iter().enumerate() {
+        for (j, col) in row.iter().enumerate() {
+            if *col == 0 {
+                starts.push((i, j));
+            }
+        }
+    }
+    let mut max = None;
+    for (i, start) in starts.iter().enumerate() {
+        println!("{i}");
+        let r = find_path(*start, grid.clone(), end, max);
+        if let Some(old) = max {
+            if r < old {
+                max = Some(r);
+            }
+        } else {
+            max = Some(r);
+        }
+    }
+    dbg!(max);
 }

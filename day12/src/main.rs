@@ -1,5 +1,8 @@
 use advent22::*;
-use std::{collections::HashMap, ops::Index};
+use std::{
+    collections::{HashMap, HashSet},
+    ops::Index,
+};
 
 #[derive(Debug)]
 struct Tree<T> {
@@ -141,30 +144,36 @@ fn generate_moves(
 }
 
 fn main() {
-    let s = load_sample();
+    let s = load_input();
     let (grid, start, end) = load_grid(s);
     let mut tree = Tree::new(start);
     // build tree of legal moves at every position
     let mut to_visit = vec![0];
     let mut round = 1;
+    let now = std::time::Instant::now();
+    let mut seen = HashSet::new();
     'outer: loop {
-        let now = std::time::Instant::now();
         let tv = std::mem::take(&mut to_visit);
         for cur in tv {
             let moves = generate_moves(&tree, &tree.nodes[cur], &grid);
             for mov in moves {
+                if seen.contains(&mov) {
+                    continue;
+                }
                 if mov == end {
                     break 'outer;
                 }
                 to_visit.push(tree.push(cur, mov));
+                seen.insert(mov);
             }
         }
-        println!(
-            "finished round {round} after {:.1}",
-            now.elapsed().as_millis() as f64 / 1000.0
-        );
+        dbg!(round);
         round += 1;
     }
+    println!(
+        "finished after {:.2e}",
+        now.elapsed().as_nanos() as f64 / 1e9
+    );
     dbg!(round);
     // dbg!(round);
     // find paths through tree terminating at end
